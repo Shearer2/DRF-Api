@@ -26,14 +26,45 @@ class WomenAPIView(APIView):
         serializer = WomenSerializer(data=request.data)
         # Если не было указано какое-то поле, то генерируем исключение.
         serializer.is_valid(raise_exception=True)
+        # Метод save автоматически вызовет метод create сериализатора и добавит новые данные.
+        serializer.save()
 
-        post_new = Women.objects.create(
-            title=request.data['title'],
-            content=request.data['content'],
-            cat_id=request.data['cat_id']
-        )
-        # Функция model_to_dict преобразует объект django в словарь.
-        return Response({'post': WomenSerializer(post_new).data})
+        # После использования метода save можно не создавать новый объект, а использовать тот, который уже имеется.
+        # data ссылается на новый созданный объект.
+        return Response({'post': serializer.data})
+
+    def put(self, request, *args, **kwargs):
+        # Забираем из словаря идентификатор записи, которую нужно поменять, если его нет, то возвращаем None.
+        pk = kwargs.get("pk", None)
+        # Если ключа нет, то возвращаем ответ клиенту.
+        if not pk:
+            return Response({"error": "Method PUT not allowed"})
+
+        # Пробуем взять нужную запись из модели Women.
+        try:
+            instance = Women.objects.get(pk=pk)
+        # Если была указана не существующая запись, то возвращаем исключение.
+        except:
+            return Response({"error": "Method PUT not allowed"})
+
+        # Если мы получили и ключ и запись по ключу, то создаём сериализатор.
+        # data это данные для изменения, а instance это запись, которую необходимо поменять.
+        serializer = WomenSerializer(data=request.data, instance=instance)
+        # Проверяем полученные данные.
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"post": serializer.data})
+
+    # Метод для удаления записи.
+    def delete(self, request, *args, **kwargs):
+        pk = kwargs.get("pk", None)
+        if not pk:
+            return Response({"error": "Method DELETE not allowed"})
+
+        # Если ключ есть, то удаляем запись из базы данных по ключу.
+
+        return Response({"post": "delete post " + str(pk)})
+
 
 
 '''class WomenAPIView(generics.ListAPIView):

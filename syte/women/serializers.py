@@ -30,6 +30,27 @@ class WomenSerializer(serializers.Serializer):
     is_published = serializers.BooleanField(default=True)
     cat_id = serializers.IntegerField()
 
+    # Метод для добавления данных.
+    def create(self, validated_data):
+        # Передаём распакованный словарь с данными. Данный словарь формируется при post запросе и проверке .is_valid.
+        return Women.objects.create(**validated_data)
+
+    # Метод для обновления записей в базе данных.
+    # instance - это ссылка на объект модели, в данном случае на Women. А validated_data - это данные, которые
+    # необходимо изменить в базе данных.
+    def update(self, instance, validated_data):
+        # Для заданного атрибута берём из словаря ключ с нужным значением, а если его нет, то возвращаем значение,
+        # которое и так установлено.
+        instance.title = validated_data.get("title", instance.title)
+        instance.content = validated_data.get("content", instance.content)
+        instance.time_update = validated_data.get("time_update", instance.time_update)
+        instance.is_published = validated_data.get("is_published", instance.is_published)
+        instance.cat_id = validated_data.get("cat_id", instance.cat_id)
+        # Сохраняем данные.
+        instance.save()
+        # Возвращаем объект instance.
+        return instance
+
     '''
     class Meta:
         model = Women
@@ -56,7 +77,7 @@ def decode():
     stream = io.BytesIO(b'{"title": "Angelina Jolie", "content": "Content: Angelina Jolie"}')
     # Для формирования словаря используем JSONParser.
     data = JSONParser().parse(stream)
-    # Чтобы сериализатор декодировал данные необъодимо использовать параметр data.
+    # Чтобы сериализатор декодировал данные необходимо использовать параметр data.
     serializer = WomenSerializer(data=data)
     # Проверяем корректность данных.
     serializer.is_valid()
