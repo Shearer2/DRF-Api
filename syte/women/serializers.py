@@ -16,7 +16,7 @@ class WomenModel:
 
 
 # Указываем сериализатор, который работает с моделями.
-class WomenSerializer(serializers.Serializer):
+'''class WomenSerializer(serializers.Serializer):
     """Сериализатор для знаменитых женщин."""
 
     # В сериализаиторе прописываем те же атрибуты, которые присутствуют и в классе WomenModel.
@@ -51,12 +51,15 @@ class WomenSerializer(serializers.Serializer):
         # Возвращаем объект instance.
         return instance
 
-    '''
+    def delete(self, pk):
+        Women.objects.filter(pk=pk).delete()
+'''
+'''
     class Meta:
         model = Women
         # Поля, которые будем использовать для сериализации, они будут отправляться обратно пользователю.
         fields = ('title', 'cat')
-    '''
+'''
 
 '''
 # Функция для преобразования объектов класса WomenModel в json-формат.
@@ -83,3 +86,15 @@ def decode():
     serializer.is_valid()
     print(serializer.validated_data)
 '''
+
+
+# Для работы с моделями есть специальный сериализатор, в котором не нужно всё прописывать вручную,
+# как при использовании Serializer.
+class WomenSerializer(serializers.ModelSerializer):
+    class Meta:
+        # Указываем какую модель используем.
+        model = Women
+        # Указываем поля для возвращения клиенту.
+        fields = ("title", "content", "cat")
+        # Возвращение всех полей пользователю.
+        #fields = "__all__"

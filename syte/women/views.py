@@ -61,10 +61,24 @@ class WomenAPIView(APIView):
         if not pk:
             return Response({"error": "Method DELETE not allowed"})
 
+        # Пробуем взять нужную запись из модели Women.
+        try:
+            instance = Women.objects.get(pk=pk)
+        # Если была указана не существующая запись, то возвращаем исключение.
+        except:
+            return Response({"error": "Method PUT not allowed"})
         # Если ключ есть, то удаляем запись из базы данных по ключу.
-
+        Women.objects.filter(pk=pk).delete()
         return Response({"post": "delete post " + str(pk)})
 
+
+# Используем ListCreateAPIView для чтения по get-запросу и создания списка данных по post-запросу.
+# Его можно применять чтобы не прописывать всё в ручную, как при использовании APIView.
+class WomenAPIList(generics.ListCreateAPIView):
+    # Возвращаем список записей клиенту.
+    queryset = Women.objects.all()
+    # Сериализатор для применения к данным.
+    serializer_class = WomenSerializer
 
 
 '''class WomenAPIView(generics.ListAPIView):

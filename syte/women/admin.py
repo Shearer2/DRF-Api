@@ -7,7 +7,7 @@ class WomenAdmin(admin.ModelAdmin):
     """Список знаменитых женщин."""
 
     list_display = ('title', 'cat')
-    ordering = ('title',)
+    ordering = ('pk',)
 
 
 @admin.register(Category)
