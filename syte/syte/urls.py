@@ -15,13 +15,30 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 # Импорт контроллера с сериализатором.
-from women.views import WomenAPIList
+from women.views import *
+# Чтобы определить набор стандартных маршрутов для viewset необходимо импортировать routers.
+from rest_framework import routers
+
+
+# Создаём объект класса.
+router = routers.SimpleRouter()
+# Регистрируем в роутере наш класс viewset, первым аргументом указываем префикс для набора маршрутов,
+# а вторым аргументом указываем наш класс с viewset.
+router.register(r'women', WomenViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/womenlist/', WomenAPIList.as_view()),
+    # Чтобы не прописывать каждый маршрут вручную можно использовать роутеры.
+    # Используем все маршруты, которые находятся в коллекции urls. Последним указывается используемый префикс.
+    path('api/v1/', include(router.urls)),  # http://127.0.0.1:8000/api/v1/women/
+    # Для viewset можно прописывать словарь в .as_view(), в качестве ключа указывается метод для обработки запроса,
+    # а в качестве значения метод, который будет вызываться в самом viewset для обработки данного запроса.
+    #path('api/v1/womenlist/', WomenViewSet.as_view({'get': 'list'})),
+    #path('api/v1/womenlist/<int:pk>/', WomenViewSet.as_view({'put': 'update'})),
+    #path('api/v1/womenlist/', WomenAPIList.as_view()),
     # Указываем целочисленное значение идентификатора записи, которую нам нужно поменять.
-    path('api/v1/womenlist/<int:pk>/', WomenAPIList.as_view()),
+    #path('api/v1/womenlist/<int:pk>/', WomenAPIUpdate.as_view()),
+    #path('api/v1/womendetail/<int:pk>/', WomenAPIDetailView.as_view()),
 ]

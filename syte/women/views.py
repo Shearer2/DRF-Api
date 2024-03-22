@@ -1,7 +1,7 @@
 from django.forms import model_to_dict
 from django.shortcuts import render
 # Импортируем generics
-from rest_framework import generics
+from rest_framework import generics, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -10,7 +10,7 @@ from .serializers import WomenSerializer
 
 
 # Класс APIView является базовым классом django rest framework.
-class WomenAPIView(APIView):
+'''class WomenAPIView(APIView):
     # Метод get отвечает за get-запросы поступающие на сервер.
     def get(self, request):
         # Чтобы не возникла ошибка необходимо указать метод values().
@@ -70,14 +70,35 @@ class WomenAPIView(APIView):
         # Если ключ есть, то удаляем запись из базы данных по ключу.
         Women.objects.filter(pk=pk).delete()
         return Response({"post": "delete post " + str(pk)})
+'''
 
-
+'''
 # Используем ListCreateAPIView для чтения по get-запросу и создания списка данных по post-запросу.
 # Его можно применять чтобы не прописывать всё в ручную, как при использовании APIView.
 class WomenAPIList(generics.ListCreateAPIView):
     # Возвращаем список записей клиенту.
     queryset = Women.objects.all()
     # Сериализатор для применения к данным.
+    serializer_class = WomenSerializer
+
+
+# Класс UpdateAPIView меняет записи по put или patch запросу.
+class WomenAPIUpdate(generics.UpdateAPIView):
+    # Указываем выбирать все записи, но класс сам обрабатывает записи и возвращает только одну нужную, а не все.
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+
+
+# Класс RetrieveUpdateDestroyAPIView получает данные, меняет или удаляет их.
+class WomenAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+'''
+
+
+# Viewset для замены функционала APIView и сокращения кода.
+class WomenViewSet(viewsets.ModelViewSet):
+    queryset = Women.objects.all()
     serializer_class = WomenSerializer
 
 
