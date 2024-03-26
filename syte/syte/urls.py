@@ -23,10 +23,12 @@ from rest_framework import routers
 
 
 # Создаём объект класса.
-router = routers.SimpleRouter()
+router = routers.DefaultRouter()
 # Регистрируем в роутере наш класс viewset, первым аргументом указываем префикс для набора маршрутов,
 # а вторым аргументом указываем наш класс с viewset.
-router.register(r'women', WomenViewSet)
+# basename нужен для формирования имён маршрута, по умолчанию он берёт имя модели из queryset во views.
+router.register(r'women', WomenViewSet, basename='women')
+print(router.urls)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

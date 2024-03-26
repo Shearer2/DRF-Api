@@ -2,10 +2,11 @@ from django.forms import model_to_dict
 from django.shortcuts import render
 # Импортируем generics
 from rest_framework import generics, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Women
+from .models import Women, Category
 from .serializers import WomenSerializer
 
 
@@ -100,6 +101,26 @@ class WomenAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
 class WomenViewSet(viewsets.ModelViewSet):
     queryset = Women.objects.all()
     serializer_class = WomenSerializer
+
+    # Чтобы возвращать не только все записи, но и какие-то определённые можно переопределить данный метод.
+    def get_queryset(self):
+        # Делаем возможность получения одной записи. Сначала получаем ключ pk.
+        pk = self.kwargs.get("pk")
+        # Если pk нет, то возвращаем три последние записи, а если есть, то возвращаем список из одной записи.
+        if not pk:
+            return Women.objects.all()[:3]
+        return Women.objects.filter(pk=pk)
+
+    # Добавляем декоратор для создания новых маршрутов, первым параметром указываем список поддерживаемых запросов,
+    # второй параметр при значении False возвращает все записи, а при значении True только одну запись и нужно указать
+    # параметр pk в функции. Имя маршрута берётся с названия функции.
+    @action(methods=['get'], detail=True)
+    def category(self, request, pk=None):
+        # В комментариях код для вывода всех записей.
+        #cats = Category.objects.all()
+        #return Response({'cats': [c.name for c in cats]})
+        cats = Category.objects.get(pk=pk)
+        return Response({'cats': cats.name})
 
 
 '''class WomenAPIView(generics.ListAPIView):
