@@ -3,10 +3,12 @@ from django.shortcuts import render
 # Импортируем generics
 from rest_framework import generics, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Women, Category
+from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from .serializers import WomenSerializer
 
 
@@ -96,10 +98,10 @@ class WomenAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = WomenSerializer
 '''
 
-
+'''
 # Viewset для замены функционала APIView и сокращения кода.
 class WomenViewSet(viewsets.ModelViewSet):
-    queryset = Women.objects.all()
+    #queryset = Women.objects.all()
     serializer_class = WomenSerializer
 
     # Чтобы возвращать не только все записи, но и какие-то определённые можно переопределить данный метод.
@@ -121,10 +123,38 @@ class WomenViewSet(viewsets.ModelViewSet):
         #return Response({'cats': [c.name for c in cats]})
         cats = Category.objects.get(pk=pk)
         return Response({'cats': cats.name})
-
+'''
 
 '''class WomenAPIView(generics.ListAPIView):
     queryset = Women.objects.all()
     # Указываем класс сериализатор.
     serializer_class = WomenSerializer
 '''
+
+
+class WomenAPIList(generics.ListCreateAPIView):
+    """Возвращение списка статей."""
+
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+    # Указываем классы для ограничения доступа, добавление новых данных доступно только авторизованных пользователей,
+    # а для всех остальных доступно только чтение.
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+
+class WomenAPIUpdate(generics.RetrieveUpdateAPIView):
+    """Изменение определённой записи."""
+
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+    # Возможность менять запись только автору данной записи, а остальные пользователи могут только просматривать.
+    permission_classes = (IsOwnerOrReadOnly,)
+
+
+class WomenAPIDestroy(generics.RetrieveDestroyAPIView):
+    """Удаление определённой записи."""
+
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+    # Указываем ограничение удаления записей, можно удалять только администратору.
+    permission_classes = (IsAdminOrReadOnly,)

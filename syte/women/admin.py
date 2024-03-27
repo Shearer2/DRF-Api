@@ -6,7 +6,7 @@ from .models import Women, Category
 class WomenAdmin(admin.ModelAdmin):
     """Список знаменитых женщин."""
 
-    list_display = ('title', 'cat')
+    list_display = ('title', 'cat', 'user_id')
     ordering = ('pk',)
 
 

@@ -91,10 +91,13 @@ def decode():
 # Для работы с моделями есть специальный сериализатор, в котором не нужно всё прописывать вручную,
 # как при использовании Serializer.
 class WomenSerializer(serializers.ModelSerializer):
+    # Добавляем аттрибут пользователя, создаём скрытое поле и в нём по умолчанию прописывается текущий пользователь.
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         # Указываем какую модель используем.
         model = Women
         # Указываем поля для возвращения клиенту.
-        fields = ("title", "content", "cat")
+        #fields = ("title", "content", "cat")
         # Возвращение всех полей пользователю.
-        #fields = "__all__"
+        fields = "__all__"
