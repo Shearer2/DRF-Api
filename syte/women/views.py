@@ -2,8 +2,9 @@ from django.forms import model_to_dict
 from django.shortcuts import render
 # Импортируем generics
 from rest_framework import generics, viewsets
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -148,7 +149,11 @@ class WomenAPIUpdate(generics.RetrieveUpdateAPIView):
     queryset = Women.objects.all()
     serializer_class = WomenSerializer
     # Возможность менять запись только автору данной записи, а остальные пользователи могут только просматривать.
-    permission_classes = (IsOwnerOrReadOnly,)
+    #permission_classes = (IsOwnerOrReadOnly,)
+    # Возможность просматривать записи только авторизованным пользователям.
+    permission_classes = (IsAuthenticated, )
+    # Предоставляем доступ к данным только тем пользователям, которые заходят по токенам.
+    authentication_classes = (TokenAuthentication,)
 
 
 class WomenAPIDestroy(generics.RetrieveDestroyAPIView):
