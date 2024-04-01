@@ -153,7 +153,8 @@ class WomenAPIUpdate(generics.RetrieveUpdateAPIView):
     # Возможность просматривать записи только авторизованным пользователям.
     permission_classes = (IsAuthenticated, )
     # Предоставляем доступ к данным только тем пользователям, которые заходят по токенам.
-    authentication_classes = (TokenAuthentication,)
+    # Необходимо закомментировать данную строку, так как она запрашивает аутентификацию по токену, а не по jwt токену.
+    #authentication_classes = (TokenAuthentication,)
 
 
 class WomenAPIDestroy(generics.RetrieveDestroyAPIView):

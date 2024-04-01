@@ -16,6 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
+# Импортируем классы для работы с jwt.
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+
 # Импорт контроллера с сериализатором.
 from women.views import *
 # Чтобы определить набор стандартных маршрутов для viewset необходимо импортировать routers.
@@ -55,4 +58,8 @@ urlpatterns = [
     # Прописываем пути для аутентификации по токенам при помощи djoser.
     path('api/v1/auth/', include('djoser.urls')),
     re_path(r'^auth/', include('djoser.urls.authtoken')),
+    # Подключаем маршруты для работы jwt токена.
+    path('api/v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/v1/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 ]
