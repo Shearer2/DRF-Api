@@ -128,6 +128,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Настройки DRF, при отключении BrowsableAPIRenderer оно не будет показываться в браузере.
 REST_FRAMEWORK = {
+    # Подключаем пагинацию. Первое это встроенный класс по умолчанию для пагинации. А второе это количество записей
+    # отображаемых на странице.
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 2,
+
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',

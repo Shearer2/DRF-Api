@@ -4,6 +4,7 @@ from django.shortcuts import render
 from rest_framework import generics, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -133,6 +134,20 @@ class WomenViewSet(viewsets.ModelViewSet):
 '''
 
 
+class WomenAPIListPagination(PageNumberPagination):
+    """Собственный класс для пагинации."""
+
+    # Количество отображаемых записей на странице.
+    page_size = 3
+    # Возможность прописывать в пути сайта количество записей для отображения
+    # (.../api/v1/women/?limit=2&offset=2&page_size=4).
+    page_size_query_param = 'page_size'
+    # Данное значение указывает на то, какое максимальное значение можно устанавливать самому
+    # в пути для отображения записей. Данный параметр никак не влияет на первое значение page_size,
+    # только на параметр в пути.
+    max_page_size = 2
+
+
 class WomenAPIList(generics.ListCreateAPIView):
     """Возвращение списка статей."""
 
@@ -141,6 +156,8 @@ class WomenAPIList(generics.ListCreateAPIView):
     # Указываем классы для ограничения доступа, добавление новых данных доступно только авторизованных пользователей,
     # а для всех остальных доступно только чтение.
     permission_classes = (IsAuthenticatedOrReadOnly,)
+    # Подключаем пагинацию.
+    pagination_class = WomenAPIListPagination
 
 
 class WomenAPIUpdate(generics.RetrieveUpdateAPIView):
